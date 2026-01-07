@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(uuid())
+  username    String   @unique @default("user")
+  email       String   @unique
+  password    String
+  name        String?
+  phoneNumber String?
+  avatar      String?
+  
+  resetToken       String?
+  resetTokenExpiry DateTime?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tasks         Task[]
+  notifications Notification[]
+  teamMemberships TeamMember[]
+  createdTeams  Team[] @relation("CreatedTeams")
+}
+
+model Task {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  status      String   @default("PENDING")
+  priority    String   @default("MEDIUM")
+  category    String?
+  progress    Int      @default(0)
+  remindMe    Boolean  @default(false)
+  
+  // JSON fields for lists
+  tags        String   @default("[]") // JSON array of strings
+  attachments String   @default("[]") // JSON array of strings
+  
+  dueDate     DateTime?
+  completedAt DateTime?
+  
+  projectId   String?
+  projectName String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+
+  teamId      String?
+  team        Team?    @relation(fields: [teamId], references: [id])
+
+  subtasks    Subtask[]
+}
+
+model Subtask {
+  id          String   @id @default(uuid())
+  title       String
+  isCompleted Boolean  @default(false)
+  taskId      String
+  task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+model Team {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  icon        String?
+  color       String?
+  avatarUrl   String?
+  
+  customTaskStatuses String? // JSON string for List<TaskStatus>
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  createdByUserId String?
+  creator         User?   @relation("CreatedTeams", fields: [createdByUserId], references: [id])
+
+  members     TeamMember[]
+  tasks       Task[]
+}
+
+model TeamMember {
+  id        String   @id @default(uuid())
+  teamId    String
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      String   @default("MEMBER")
+
+  joinedAt  DateTime @default(now())
+
+  @@unique([teamId, userId])
+}
+
+model Notification {
+  id              String   @id @default(uuid())
+  title           String   @default("Notification")
+  content         String?  // Body
+  type            String
+  isRead          Boolean  @default(false)
+  
+  relatedEntityId   String?
+  relatedEntityType String?
+  
+  actorUserId       String?
+  actorUsername     String?
+  actorAvatarUrl    String?
+
+  createdAt       DateTime @default(now())
+
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
