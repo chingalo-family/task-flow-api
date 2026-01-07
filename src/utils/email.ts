@@ -28,41 +28,54 @@ const createTransporter = () => {
 export const sendPasswordResetEmail = async (email: string, resetToken: string) => {
   const transporter = createTransporter();
   
-  // Build reset URL (update with your actual frontend URL)
-  const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
+  // Build reset URL pointing to HTML reset page
+  const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password.html?token=${resetToken}`;
+  
+  // HTML Email Template matching website design
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1A2332; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #243447; border-radius: 12px; overflow: hidden; margin-top: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .header { background-color: #243447; padding: 30px; text-align: center; border-bottom: 1px solid #374151; }
+        .logo { font-size: 24px; font-weight: bold; color: #2E90FA; text-decoration: none; }
+        .content { padding: 40px 30px; color: #FFFFFF; text-align: center; }
+        .button { display: inline-block; padding: 14px 28px; background-color: #2E90FA; color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: 600; margin-top: 20px; transition: background-color 0.3s; }
+        .button:hover { background-color: #1a73e8; }
+        .footer { background-color: #1A2332; padding: 20px; text-align: center; color: #94A3B8; font-size: 12px; border-top: 1px solid #374151; }
+        h1 { margin-bottom: 16px; font-size: 24px; }
+        p { color: #94A3B8; line-height: 1.6; margin-bottom: 24px; font-size: 16px; }
+        .link { color: #2E90FA; word-break: break-all; font-size: 14px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <a href="#" class="logo">Task Flow</a>
+        </div>
+        <div class="content">
+          <h1>Reset Your Password</h1>
+          <p>We received a request to reset your password for your Task Flow account. If you didn't make this request, just ignore this email.</p>
+          <a href="${resetUrl}" class="button">Reset Password</a>
+          <p style="margin-top: 30px; font-size: 14px;">Or copy and paste this link into your browser:</p>
+          <a href="${resetUrl}" class="link">${resetUrl}</a>
+        </div>
+        <div class="footer">
+          &copy; ${new Date().getFullYear()} Task Flow. All rights reserved.
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
   
   const mailOptions = {
     from: process.env.SMTP_FROM || 'noreply@taskflow.com',
     to: email,
     subject: 'Password Reset Request - Task Flow',
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2>Password Reset Request</h2>
-        <p>You requested to reset your password. Click the button below to reset it:</p>
-        <div style="margin: 30px 0;">
-          <a href="${resetUrl}" 
-             style="background-color: #2E90FA; color: white; padding: 12px 24px; 
-                    text-decoration: none; border-radius: 5px; display: inline-block;">
-            Reset Password
-          </a>
-        </div>
-        <p>Or copy and paste this link into your browser:</p>
-        <p style="color: #666; word-break: break-all;">${resetUrl}</p>
-        <p style="margin-top: 30px; color: #999; font-size: 12px;">
-          This link will expire in 1 hour.<br>
-          If you didn't request this, please ignore this email.
-        </p>
-      </div>
-    `,
-    text: `
-Password Reset Request
-
-You requested to reset your password. Click the link below to reset it:
-${resetUrl}
-
-This link will expire in 1 hour.
-If you didn't request this, please ignore this email.
-    `,
+    html: htmlContent,
+    text: htmlContent.replace(/<[^>]*>/g, '')
   };
 
   try {
@@ -79,4 +92,5 @@ If you didn't request this, please ignore this email.
     console.error('Email sending failed:', error);
     throw new Error('Failed to send password reset email');
   }
-};
+  };
+        

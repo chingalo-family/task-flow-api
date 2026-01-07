@@ -27,14 +27,20 @@ export const register = async (req: Request, res: Response) => {
     });
 
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || 'secret', {
-      expiresIn: '7d',
+      expiresIn: (process.env.JWT_EXPIRATION || '7d') as any,
     });
 
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
       token,
-      user: { id: user.id, email: user.email, name: user.name, username: user.username },
+      user: { 
+        id: user.id, 
+        email: user.email, 
+        name: user.name, 
+        username: user.username,
+        phoneNumber: user.phoneNumber 
+      },
     });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Something went wrong' });
@@ -43,9 +49,10 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({ where: { username } });
+    
     if (!user) {
       return res.status(400).json({ success: false, message: 'Invalid credentials' });
     }
@@ -56,14 +63,20 @@ export const login = async (req: Request, res: Response) => {
     }
 
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || 'secret', {
-      expiresIn: '7d',
+      expiresIn: (process.env.JWT_EXPIRATION || '7d') as any,
     });
 
     res.status(200).json({
       success: true,
       message: 'Login successful',
       token,
-      user: { id: user.id, email: user.email, name: user.name },
+      user: { 
+        id: user.id, 
+        email: user.email, 
+        name: user.name, 
+        username: user.username,
+        phoneNumber: user.phoneNumber 
+      },
     });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Something went wrong' });
@@ -74,7 +87,14 @@ export const getMe = async (req: Request, res: Response) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: req.user?.id },
-      select: { id: true, email: true, name: true, createdAt: true },
+      select: { 
+        id: true, 
+        email: true, 
+        name: true, 
+        username: true, 
+        phoneNumber: true, 
+        createdAt: true 
+      },
     });
 
     res.status(200).json({ success: true, user });
@@ -101,8 +121,9 @@ export const forgotPassword = async (req: Request, res: Response) => {
     const resetToken = crypto.randomBytes(32).toString('hex');
     const hashedToken = await bcrypt.hash(resetToken, 10);
     
-    // Set expiry to 1 hour from now
-    const resetTokenExpiry = new Date(Date.now() + 3600000);
+    // Set expiry based on environment variable (default: 1 hour)
+    const expirationMs = parseInt(process.env.RESET_TOKEN_EXPIRATION || '3600000');
+    const resetTokenExpiry = new Date(Date.now() + expirationMs);
 
     // Save hashed token and expiry to database
     await prisma.user.update({
@@ -122,6 +143,45 @@ export const forgotPassword = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Forgot password error:', error);
+    res.status(500).json({ success: false, message: 'Something went wrong' });
+  }
+};
+
+export const verifyResetToken = async (req: Request, res: Response) => {
+  try {
+    const { token } = req.body;
+
+    // Find users with valid reset tokens
+    const users = await prisma.user.findMany({
+      where: {
+        resetToken: { not: null },
+        resetTokenExpiry: { gte: new Date() },
+      },
+      select: { id: true, email: true, resetToken: true, resetTokenExpiry: true }
+    });
+
+    // Find user with matching token
+    let validUser = null;
+    for (const user of users) {
+      if (user.resetToken && await bcrypt.compare(token, user.resetToken)) {
+        validUser = user;
+        break;
+      }
+    }
+
+    if (!validUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired reset token',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      email: validUser.email,
+    });
+  } catch (error) {
+    console.error('Verify token error:', error);
     res.status(500).json({ success: false, message: 'Something went wrong' });
   }
 };

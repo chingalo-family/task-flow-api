@@ -57,15 +57,9 @@ model Task {
   teamId      String?
   team        Team?    @relation(fields: [teamId], references: [id])
 
-  subtasks    Subtask[]
-}
-
-model Subtask {
-  id          String   @id @default(uuid())
-  title       String
-  isCompleted Boolean  @default(false)
-  taskId      String
-  task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  parentTaskId String?
+  parentTask   Task?   @relation("TaskSubtasks", fields: [parentTaskId], references: [id], onDelete: Cascade)
+  subtasks     Task[]  @relation("TaskSubtasks")
 }
 
 model Team {

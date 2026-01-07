@@ -47,7 +47,10 @@ export const createTask = async (req: Request, res: Response) => {
         subtasks: subtasks ? {
             create: subtasks.map((s: any) => ({
                 title: s.title,
-                isCompleted: s.isCompleted
+                status: s.isCompleted ? 'COMPLETED' : 'PENDING',
+                userId: userId, // Subtasks need an owner
+                tags: '[]',
+                attachments: '[]'
             }))
         } : undefined
       },

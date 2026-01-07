@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { register, login, getMe, forgotPassword, resetPassword } from '../controllers/auth.controller';
+import { register, login, getMe, forgotPassword, resetPassword, verifyResetToken } from '../controllers/auth.controller';
 import { validate } from '../utils/validate';
 import { registerSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema } from '../schemas/auth.schema';
 import { authenticate } from '../middleware/auth.middleware';
@@ -52,7 +52,7 @@ router.post('/register', validate(registerSchema), register);
  * @swagger
  * /api/auth/login:
  *   post:
- *     summary: Login a user
+ *     summary: Login a user with username
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -61,10 +61,10 @@ router.post('/register', validate(registerSchema), register);
  *           schema:
  *             type: object
  *             required:
- *               - email
+ *               - username
  *               - password
  *             properties:
- *               email:
+ *               username:
  *                 type: string
  *               password:
  *                 type: string
@@ -114,6 +114,31 @@ router.get('/me', authenticate, getMe);
  *         description: Reset email sent
  */
 router.post('/forgot-password', validate(forgotPasswordSchema), forgotPassword);
+
+/**
+ * @swagger
+ * /api/auth/verify-reset-token:
+ *   post:
+ *     summary: Verify password reset token validity
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *             properties:
+ *               token:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Token is valid, returns user email
+ *       400:
+ *         description: Invalid or expired token
+ */
+router.post('/verify-reset-token', verifyResetToken);
 
 /**
  * @swagger

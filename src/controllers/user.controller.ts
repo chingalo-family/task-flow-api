@@ -45,15 +45,24 @@ export const listUsers = async (req: Request, res: Response) => {
     const whereClause: any = {};
     if (search) {
       whereClause.OR = [
-        { name: { contains: String(search) } }, // remove mode: 'insensitive' for sqlite compatibility if needed, though recent prisma supports it? SQLite is case insensitive by default for ASCII
+        { name: { contains: String(search) } },
         { email: { contains: String(search) } },
+        { username: { contains: String(search) } },
       ];
     }
 
     const users = await prisma.user.findMany({
       where: whereClause,
-      take: 20,
-      select: { id: true, name: true, email: true, avatar: true },
+      take: 50,
+      select: { 
+        id: true, 
+        name: true, 
+        email: true, 
+        username: true,
+        phoneNumber: true,
+        avatar: true,
+        createdAt: true,
+      },
     });
 
     res.json({ success: true, users });

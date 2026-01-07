@@ -18,8 +18,13 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(express.json());
 app.use(cors());
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false, // Allow inline scripts for HTML pages
+}));
 app.use(morgan('dev'));
+
+// Serve static files (for password reset HTML page)
+app.use(express.static('public'));
 
 // Swagger
 setupSwagger(app);
