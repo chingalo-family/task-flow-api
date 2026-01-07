@@ -122,10 +122,27 @@ npm run pm2:monit    # Monitor application
 
 **PM2 Features:**
 - ✅ Auto-restart on crashes
-- ✅ Cluster mode support
-- ✅ Log management
+- ✅ **Cluster mode with load balancing** (uses all CPU cores)
+- ✅ **Automatic scaling** across multiple instances
+- ✅ Log management with merge
 - ✅ Zero-downtime reloads
 - ✅ Startup script generation
+- ✅ Graceful shutdown handling
+
+**Scalability:**
+The PM2 configuration automatically scales to use all available CPU cores using cluster mode. This enables:
+- Load balancing across multiple Node.js processes
+- Better CPU utilization
+- Higher throughput for concurrent requests
+- Fault tolerance (if one process crashes, others continue)
+
+To manually control instances:
+```javascript
+// In ecosystem.config.js
+instances: 'max',  // Use all CPU cores (default)
+// OR
+instances: 4,      // Specify exact number
+```
 
 **First-time PM2 Setup:**
 ```bash
