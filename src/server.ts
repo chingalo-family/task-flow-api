@@ -27,17 +27,15 @@ app.use(morgan('dev'));
 app.use(express.static('public'));
 
 // Routes Configuration
-const apiPrefix = process.env.API_PREFIX ? `/${process.env.API_PREFIX}` : '';
-
 // Swagger
-setupSwagger(app, Number(PORT), apiPrefix);
+setupSwagger(app, Number(PORT));
 
 // Routes
-app.use(`${apiPrefix}/api/auth`, authRoutes);
-app.use(`${apiPrefix}/api/tasks`, taskRoutes);
-app.use(`${apiPrefix}/api/teams`, teamRoutes);
-app.use(`${apiPrefix}/api/users`, userRoutes);
-app.use(`${apiPrefix}/api/notifications`, notificationRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/tasks', taskRoutes);
+app.use('/api/teams', teamRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 app.get('/', (req, res) => {
   res.send('Task Flow API is running');
