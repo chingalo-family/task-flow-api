@@ -4,8 +4,8 @@ export const createTaskSchema = z.object({
   body: z.object({
     title: z.string().min(1),
     description: z.string().optional(),
-    status: z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED']).optional(),
-    priority: z.enum(['LOW', 'MEDIUM', 'HIGH']).optional(),
+    status: z.enum(['pending', 'in_progress', 'completed']).optional(),
+    priority: z.enum(['low', 'medium', 'high', 'urgent']).optional(),
     dueDate: z.string().datetime().optional(),
     teamId: z.string().uuid().optional(),
     category: z.string().optional(),
@@ -25,8 +25,8 @@ export const updateTaskSchema = z.object({
   body: z.object({
     title: z.string().min(1).optional(),
     description: z.string().optional(),
-    status: z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED']).optional(),
-    priority: z.enum(['LOW', 'MEDIUM', 'HIGH']).optional(),
+    status: z.enum(['pending', 'in_progress', 'completed']).optional(),
+    priority: z.enum(['low', 'medium', 'high', 'urgent']).optional(),
     dueDate: z.string().datetime().optional(),
     teamId: z.string().uuid().optional(),
     category: z.string().optional(),

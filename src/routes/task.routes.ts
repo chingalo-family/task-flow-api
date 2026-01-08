@@ -34,10 +34,14 @@ router.use(authenticate);
  *         name: status
  *         schema:
  *           type: string
+ *           enum: [pending, in_progress, completed]
+ *         description: Filter by task status
  *       - in: query
  *         name: priority
  *         schema:
  *           type: string
+ *           enum: [low, medium, high, urgent]
+ *         description: Filter by task priority
  *       - in: query
  *         name: page
  *         schema:
@@ -100,7 +104,7 @@ router.get('/', getTasks);
  *                 enum: [PENDING, IN_PROGRESS, COMPLETED]
  *               priority:
  *                 type: string
- *                 enum: [LOW, MEDIUM, HIGH]
+ *                 enum: [LOW, MEDIUM, HIGH, URGENT]
  *               category:
  *                  type: string
  *               tags:
@@ -159,6 +163,10 @@ router.get('/:id', getTask);
  *                 type: string
  *               status:
  *                 type: string
+ *                 enum: [PENDING, IN_PROGRESS, COMPLETED]
+ *               priority:
+ *                 type: string
+ *                 enum: [LOW, MEDIUM, HIGH, URGENT]
  *     responses:
  *       200:
  *         description: Task updated

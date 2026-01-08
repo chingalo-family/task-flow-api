@@ -68,7 +68,7 @@ export const createTask = async (req: Request, res: Response) => {
         subtasks: subtasks ? {
             create: subtasks.map((s: any) => ({
                 title: s.title,
-                status: s.isCompleted ? 'COMPLETED' : 'PENDING',
+                status: s.isCompleted ? 'completed' : 'pending',
                 userId: userId, // Subtasks need an owner
                 tags: '[]',
                 attachments: '[]'

@@ -32,8 +32,8 @@ model Task {
   id          String   @id @default(uuid())
   title       String
   description String?
-  status      String   @default("PENDING")
-  priority    String   @default("MEDIUM")
+  status      String   @default("pending")
+  priority    String   @default("medium")
   category    String?
   progress    Int      @default(0)
   remindMe    Boolean  @default(false)
