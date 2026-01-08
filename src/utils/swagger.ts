@@ -8,7 +8,36 @@ const options: swaggerJsdoc.Options = {
     info: {
       title: 'Task Flow API',
       version: '1.0.0',
-      description: 'API Documentation for Task Flow Application',
+      description: `
+# Task Flow API Documentation
+
+Welcome to the **Task Flow API**! This API powers the Task Flow application, enabling you to manage tasks, teams, and collaborations efficiently.
+
+## 🚀 Getting Started
+
+Follow these steps to start using the API:
+
+### 1. **Register a New User**
+- Use the **\`POST /api/auth/register\`** endpoint to create an account.
+- Required fields: \`username\`, \`email\`, \`password\`.
+- You will receive a JWT \`token\` in the response.
+
+### 2. **Login**
+- If you already have an account, use **\`POST /api/auth/login\`**.
+- Provide your \`username\` and \`password\`.
+- Copy the \`token\` from the response.
+
+### 3. **Authenticate Requests**
+- Click the green **Authorize** button at the top right of this page.
+- Enter your token in the box.
+- Click **Authorize** to save it.
+- Now you can test protected endpoints like \`GET /api/tasks\`!
+
+### 4. **Explore Modules**
+- **Tasks**: Create, update, and track tasks with subtasks and tags.
+- **Teams**: Collaborate by creating teams and adding members.
+- **Notifications**: Stay updated with real-time alerts.
+      `,
     },
     components: {
       securitySchemes: {

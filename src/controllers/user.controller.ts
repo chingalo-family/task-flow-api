@@ -51,21 +51,38 @@ export const listUsers = async (req: Request, res: Response) => {
       ];
     }
 
-    const users = await prisma.user.findMany({
-      where: whereClause,
-      take: 50,
-      select: { 
-        id: true, 
-        name: true, 
-        email: true, 
-        username: true,
-        phoneNumber: true,
-        avatar: true,
-        createdAt: true,
-      },
-    });
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
 
-    res.json({ success: true, users });
+    const [users, total] = await Promise.all([
+        prisma.user.findMany({
+            where: whereClause,
+            take: limit,
+            skip: skip,
+            select: { 
+                id: true, 
+                name: true, 
+                email: true, 
+                username: true,
+                phoneNumber: true,
+                avatar: true,
+                createdAt: true,
+            },
+        }),
+        prisma.user.count({ where: whereClause })
+    ]);
+
+    res.json({ 
+        success: true, 
+        users,
+        meta: {
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit)
+        }
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error' });
   }

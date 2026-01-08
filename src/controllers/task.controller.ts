@@ -10,16 +10,37 @@ export const getTasks = async (req: Request, res: Response) => {
         return res.status(401).json({ success: false, message: 'Unauthorized' });
     }
 
-    const tasks = await prisma.task.findMany({
-      where: {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const where = {
         userId,
         status: status ? String(status) : undefined,
         priority: priority ? String(priority) : undefined,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+    };
 
-    res.status(200).json({ success: true, tasks });
+    const [tasks, total] = await Promise.all([
+        prisma.task.findMany({
+            where,
+            orderBy: { createdAt: 'desc' },
+            skip,
+            take: limit,
+            include: { subtasks: true } // Include subtasks in list view is often useful
+        }),
+        prisma.task.count({ where })
+    ]);
+
+    res.status(200).json({ 
+        success: true, 
+        tasks,
+        meta: {
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit)
+        }
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Something went wrong' });
   }

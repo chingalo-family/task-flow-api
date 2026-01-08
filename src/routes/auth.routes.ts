@@ -43,6 +43,21 @@ const router = Router();
  *     responses:
  *       201:
  *         description: User created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 token:
+ *                   type: string
+ *                 expiresIn:
+ *                   type: number
+ *                 expiresAt:
+ *                   type: string
+ *                 user:
+ *                   type: object
  *       400:
  *         description: Validation error
  */
@@ -71,6 +86,21 @@ router.post('/register', validate(registerSchema), register);
  *     responses:
  *       200:
  *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 token:
+ *                   type: string
+ *                 expiresIn:
+ *                   type: number
+ *                 expiresAt:
+ *                   type: string
+ *                 user:
+ *                   type: object
  *       400:
  *         description: Invalid credentials
  */

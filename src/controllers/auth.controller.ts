@@ -26,14 +26,20 @@ export const register = async (req: Request, res: Response) => {
       },
     });
 
+    const expiresIn = process.env.JWT_EXPIRATION || '7d';
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || 'secret', {
-      expiresIn: (process.env.JWT_EXPIRATION || '7d') as any,
+      expiresIn: expiresIn as any,
     });
+
+    const expirationMs = parseDuration(expiresIn);
+    const expiresAt = new Date(Date.now() + expirationMs);
 
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
       token,
+      expiresIn: expirationMs / 1000,
+      expiresAt: expiresAt.toISOString(),
       user: { 
         id: user.id, 
         email: user.email, 
@@ -45,6 +51,23 @@ export const register = async (req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({ success: false, message: 'Something went wrong' });
   }
+};
+
+// Helper to parse duration string (e.g., '7d', '24h') to milliseconds
+const parseDuration = (duration: string): number => {
+    const match = duration.match(/^(\d+)([dhms])$/);
+    if (!match) return 7 * 24 * 60 * 60 * 1000; // Default 7d
+    
+    const value = parseInt(match[1]);
+    const unit = match[2];
+    
+    switch (unit) {
+        case 'd': return value * 24 * 60 * 60 * 1000;
+        case 'h': return value * 60 * 60 * 1000;
+        case 'm': return value * 60 * 1000;
+        case 's': return value * 1000;
+        default: return 7 * 24 * 60 * 60 * 1000;
+    }
 };
 
 export const login = async (req: Request, res: Response) => {
@@ -62,14 +85,21 @@ export const login = async (req: Request, res: Response) => {
       return res.status(400).json({ success: false, message: 'Invalid credentials' });
     }
 
+    const expiresIn = process.env.JWT_EXPIRATION || '7d';
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || 'secret', {
-      expiresIn: (process.env.JWT_EXPIRATION || '7d') as any,
+      expiresIn: expiresIn as any,
     });
+
+    // Calculate absolute expiration time for client convenience
+    const expirationMs = parseDuration(expiresIn);
+    const expiresAt = new Date(Date.now() + expirationMs);
 
     res.status(200).json({
       success: true,
       message: 'Login successful',
       token,
+      expiresIn: expirationMs / 1000, // seconds
+      expiresAt: expiresAt.toISOString(),
       user: { 
         id: user.id, 
         email: user.email, 
