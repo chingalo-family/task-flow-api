@@ -2,7 +2,7 @@ import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { Express } from 'express';
 
-const options: swaggerJsdoc.Options = {
+const getSwaggerOptions = (port: number, apiPrefix: string): swaggerJsdoc.Options => ({
   definition: {
     openapi: '3.0.0',
     info: {
@@ -39,6 +39,12 @@ Follow these steps to start using the API:
 - **Notifications**: Stay updated with real-time alerts.
       `,
     },
+    servers: [
+      {
+        url: `${apiPrefix}`,
+        description: 'Resulting API Server',
+      },
+    ],
     components: {
       securitySchemes: {
         bearerAuth: {
@@ -55,11 +61,12 @@ Follow these steps to start using the API:
     ],
   },
   apis: ['./src/routes/*.ts', './src/schemas/*.ts'],
-};
+});
 
-const swaggerSpec = swaggerJsdoc(options);
-
-export const setupSwagger = (app: Express) => {
+export const setupSwagger = (app: Express, port: number, apiPrefix: string) => {
+  const options = getSwaggerOptions(port, apiPrefix);
+  const swaggerSpec = swaggerJsdoc(options);
+  
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-  console.log('Swagger docs available at http://localhost:3000/api-docs');
+  console.log(`Swagger docs available at http://localhost:${port}/api-docs`);
 };
