@@ -6,6 +6,7 @@
 - `GET /api/auth/me` - Get current user profile
 - `POST /api/auth/forgot-password` - Request password reset
 - `POST /api/auth/reset-password` - Reset password with token
+- `POST /api/auth/change-password` - Change password for the currently authenticated user.
 
 **Response Fields:** id, email, username, name, phoneNumber
 
