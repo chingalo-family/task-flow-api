@@ -625,8 +625,14 @@ Create `.vscode/launch.json`:
 4. **Check Prisma queries** with logging:
 
 ```typescript
+// Development - all logs
 const prisma = new PrismaClient({
   log: ['query', 'info', 'warn', 'error'],
+});
+
+// Production - errors and warnings only (better performance)
+const prisma = new PrismaClient({
+  log: ['warn', 'error'],
 });
 ```
 

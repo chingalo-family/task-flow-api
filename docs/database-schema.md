@@ -539,7 +539,8 @@ Consider setting up automated backups in production:
 
 ```bash
 # Add to crontab (daily backup at 2 AM)
-0 2 * * * cp /path/to/taskflow.db /path/to/backups/taskflow-$(date +\%Y\%m\%d).db
+# Note: The percent signs don't need escaping in crontab
+0 2 * * * cp /path/to/taskflow.db /path/to/backups/taskflow-$(date +%Y%m%d).db
 ```
 
 ---

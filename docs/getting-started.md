@@ -6,8 +6,8 @@ This guide will help you set up and run Task Flow API on your local machine.
 
 Before you begin, ensure you have the following installed:
 
-- **Node.js** (v14.0.0 or higher)
-- **npm** (v6.0.0 or higher)
+- **Node.js** (v16.0.0 or higher, v18+ recommended)
+- **npm** (v7.0.0 or higher)
 - **Git** (for cloning the repository)
 
 You can verify your installations:

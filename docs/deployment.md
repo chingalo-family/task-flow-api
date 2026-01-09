@@ -242,8 +242,13 @@ sudo systemctl status task-flow-api
 # Update system
 sudo apt update && sudo apt upgrade -y
 
-# Install Node.js
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+# Install Node.js (v18 LTS recommended)
+# Download and inspect the setup script first for security
+curl -fsSL https://deb.nodesource.com/setup_18.x -o nodesource_setup.sh
+# Review the script
+cat nodesource_setup.sh
+# If safe, execute it
+sudo bash nodesource_setup.sh
 sudo apt install -y nodejs
 
 # Install PM2 globally

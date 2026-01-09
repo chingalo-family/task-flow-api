@@ -98,15 +98,17 @@ JWT_EXPIRATION=7d
 **Generating a Secure JWT Secret:**
 
 ```bash
-# Using Node.js
+# Using Node.js (recommended - run in a secure environment)
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 # Using OpenSSL
 openssl rand -hex 32
 
-# Using online tool
+# Using online tool (use with caution)
 # https://randomkeygen.com/
 ```
+
+**Security Note:** Generate secrets in a secure environment and handle the output securely. Never share or commit your JWT_SECRET.
 
 **Security Recommendations:**
 - Use at least 32 characters

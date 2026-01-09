@@ -44,8 +44,8 @@ We are committed to providing a welcoming and inclusive environment for all cont
 
 Before contributing, ensure you have:
 
-- Node.js (v14.0.0 or higher)
-- npm (v6.0.0 or higher)
+- Node.js (v16.0.0 or higher, v18+ recommended)
+- npm (v7.0.0 or higher)
 - Git
 - Basic knowledge of TypeScript and Express.js
 - Familiarity with Prisma ORM

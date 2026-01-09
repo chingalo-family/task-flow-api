@@ -63,8 +63,8 @@ This documentation is organized to help you quickly find what you need:
 ## 📝 Version Information
 
 - **Current Version**: 1.0.0
-- **Node.js**: >= 14.0.0
-- **npm**: >= 6.0.0
+- **Node.js**: >= 16.0.0 (v18+ recommended)
+- **npm**: >= 7.0.0
 
 ## 🤝 Support
 
