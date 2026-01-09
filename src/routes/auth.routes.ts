@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { register, login, getMe, forgotPassword, resetPassword, verifyResetToken } from '../controllers/auth.controller';
+import { register, login, getMe, forgotPassword, resetPassword, verifyResetToken, changePassword } from '../controllers/auth.controller';
 import { validate } from '../utils/validate';
-import { registerSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema } from '../schemas/auth.schema';
+import { registerSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema, changePasswordSchema } from '../schemas/auth.schema';
 import { authenticate } from '../middleware/auth.middleware';
 
 const router = Router();
@@ -197,5 +197,32 @@ router.post('/verify-reset-token', verifyResetToken);
  *         description: Invalid or expired token
  */
 router.post('/reset-password', validate(resetPasswordSchema), resetPassword);
+
+/**
+ * @swagger
+ * /api/auth/change-password:
+ *   post:
+ *     summary: Change password for the currently authenticated user
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - newPassword
+ *             properties:
+ *               newPassword:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password changed successfully, returns new token
+ *       401:
+ *         description: Unauthorized
+ */
+router.post('/change-password', authenticate, validate(changePasswordSchema), changePassword);
 
 export default router;
