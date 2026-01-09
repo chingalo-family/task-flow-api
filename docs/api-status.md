@@ -2,7 +2,7 @@
 
 ## ✅ **Auth Module** - COMPLETE
 - `POST /api/auth/register` - Register with username, email, password, name, phone
-- `POST /api/auth/login` - Login with username OR email + password  
+- `POST /api/auth/login` - Login with username + password  
 - `GET /api/auth/me` - Get current user profile
 - `POST /api/auth/forgot-password` - Request password reset
 - `POST /api/auth/reset-password` - Reset password with token
