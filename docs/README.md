@@ -14,6 +14,7 @@ Welcome to the comprehensive documentation for Task Flow API - a robust RESTful 
 - **[Database Schema](./database-schema.md)** - Database structure and relationships
 
 ### API Reference
+- **[Swagger UI](http://localhost:3000/api-docs)** - 🎯 **Interactive API documentation (Recommended)**
 - **[API Reference](./api-reference.md)** - Complete API endpoints documentation
 - **[API Status](./api-status.md)** - Feature implementation status
 
@@ -27,7 +28,7 @@ Welcome to the comprehensive documentation for Task Flow API - a robust RESTful 
 
 ## 🚀 Quick Links
 
-- **API Documentation**: `http://localhost:3000/api-docs` (Swagger UI)
+- **🎯 Swagger UI (Interactive API Docs)**: `http://localhost:3000/api-docs` - **Recommended for testing**
 - **GitHub Repository**: [chingalo-family/task-flow-api](https://github.com/chingalo-family/task-flow-api)
 
 ## 🎯 Key Features

@@ -1,6 +1,8 @@
 # API Reference
 
-Complete API endpoint reference for Task Flow API. For interactive documentation, visit `/api-docs` when the server is running.
+Complete API endpoint reference for Task Flow API.
+
+> **💡 Interactive Documentation**: For a fully interactive API experience with "Try it out" functionality, visit the **Swagger UI** at `http://localhost:3000/api-docs` when the server is running.
 
 ## Base URL
 
@@ -25,14 +27,22 @@ Login or register to receive a JWT token:
 ```bash
 curl -X POST http://localhost:3000/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email": "user@example.com", "password": "password123"}'
+  -d '{"username": "johndoe", "password": "password123"}'
 ```
 
 Response:
 ```json
 {
+  "success": true,
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": { ... }
+  "expiresIn": 604800,
+  "expiresAt": "2026-01-16T12:00:00.000Z",
+  "user": {
+    "id": "uuid-here",
+    "username": "johndoe",
+    "email": "john@example.com",
+    "name": "John Doe"
+  }
 }
 ```
 
@@ -60,7 +70,10 @@ Create a new user account.
 **Response:** `201 Created`
 ```json
 {
+  "success": true,
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "expiresIn": 604800,
+  "expiresAt": "2026-01-16T12:00:00.000Z",
   "user": {
     "id": "uuid-here",
     "username": "johndoe",
@@ -91,7 +104,7 @@ Authenticate a user and receive a JWT token.
 **Request Body:**
 ```json
 {
-  "email": "john@example.com",  // Can use username instead
+  "username": "johndoe",  // Can use email instead
   "password": "securePassword123"
 }
 ```
@@ -99,7 +112,10 @@ Authenticate a user and receive a JWT token.
 **Response:** `200 OK`
 ```json
 {
+  "success": true,
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "expiresIn": 604800,
+  "expiresAt": "2026-01-16T12:00:00.000Z",
   "user": {
     "id": "uuid-here",
     "username": "johndoe",
@@ -111,7 +127,7 @@ Authenticate a user and receive a JWT token.
 ```
 
 **Notes:**
-- Can login with either `email` or `username`
+- Can login with either `username` or `email`
 - Password is case-sensitive
 
 ---
@@ -188,6 +204,76 @@ Reset password using the token from email.
   "message": "Password reset successful"
 }
 ```
+
+---
+
+### Verify Reset Token
+
+Verify if a password reset token is valid.
+
+**Endpoint:** `POST /api/auth/verify-reset-token`
+
+**Request Body:**
+```json
+{
+  "token": "reset-token-from-email"
+}
+```
+
+**Response:** `200 OK`
+```json
+{
+  "message": "Token is valid",
+  "email": "john@example.com"
+}
+```
+
+**Error Response:** `400 Bad Request`
+```json
+{
+  "error": "Invalid or expired token"
+}
+```
+
+**Notes:**
+- Use this endpoint to verify token validity before showing password reset form
+- Returns the user's email if token is valid
+
+---
+
+### Change Password
+
+Change password for the currently authenticated user.
+
+**Endpoint:** `POST /api/auth/change-password`
+
+**Headers:**
+```
+Authorization: Bearer <your-jwt-token>
+```
+
+**Request Body:**
+```json
+{
+  "newPassword": "newSecurePassword123"
+}
+```
+
+**Response:** `200 OK`
+```json
+{
+  "success": true,
+  "message": "Password changed successfully",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "expiresIn": 604800,
+  "expiresAt": "2026-01-16T12:00:00.000Z"
+}
+```
+
+**Notes:**
+- Requires authentication
+- Returns a new JWT token after password change
+- Old tokens remain valid until expiration
 
 ---
 
@@ -915,25 +1001,37 @@ CORS is enabled for all origins in development. Configure appropriately for prod
 
 ---
 
-## Interactive Documentation
+## Swagger UI - Interactive Documentation
 
-For a more interactive experience, use the Swagger UI available at:
-
-```
-http://localhost:3000/api-docs
-```
+> **🎯 Recommended**: For the most complete and up-to-date API documentation, use the **Swagger UI** at:
+>
+> ```
+> http://localhost:3000/api-docs
+> ```
 
 The Swagger UI provides:
-- Try-it-out functionality
-- Request/response examples
-- Schema definitions
-- Authentication testing
+- ✅ **Try-it-out functionality** - Test endpoints directly from your browser
+- ✅ **Real-time validation** - See request/response schemas
+- ✅ **Authentication testing** - Easily test protected endpoints
+- ✅ **Auto-generated examples** - See example requests and responses
+- ✅ **Complete endpoint coverage** - All endpoints are documented
+- ✅ **Always up-to-date** - Generated from source code annotations
+
+### Using Swagger UI
+
+1. Start the server: `npm run dev`
+2. Open `http://localhost:3000/api-docs` in your browser
+3. Click **Authorize** button (top-right)
+4. Enter your JWT token from login/register
+5. Try any endpoint using **Try it out** button
 
 ---
 
 ## Additional Resources
 
-- [Getting Started](./getting-started.md)
-- [Configuration](./configuration.md)
-- [Database Schema](./database-schema.md)
+- [Getting Started](./getting-started.md) - Setup and installation
+- [Configuration](./configuration.md) - Environment variables
+- [Database Schema](./database-schema.md) - Database structure
 - [API Status](./api-status.md) - Feature implementation status
+- [Development Guide](./development.md) - Development workflow
+- [Troubleshooting](./troubleshooting.md) - Common issues
