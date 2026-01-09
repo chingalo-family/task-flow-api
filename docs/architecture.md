@@ -501,7 +501,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 | Technology | Purpose | Version |
 |------------|---------|---------|
-| Node.js | Runtime | >= 14.0.0 |
+| Node.js | Runtime | >= 16.0.0 |
 | TypeScript | Language | ^5.9.3 |
 | Express.js | Web framework | ^5.2.1 |
 | Prisma | ORM | 5.10.2 |

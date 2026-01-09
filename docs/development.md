@@ -24,9 +24,9 @@ This guide covers everything you need to know for developing Task Flow API.
 Install the following tools:
 
 ```bash
-# Node.js and npm
-node --version  # Should be >= 14.0.0
-npm --version   # Should be >= 6.0.0
+# Node.js and npm (v16+ required, v18 LTS recommended)
+node --version  # Should be >= 16.0.0
+npm --version   # Should be >= 7.0.0
 
 # Git
 git --version

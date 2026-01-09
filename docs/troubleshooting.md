@@ -846,7 +846,7 @@ When troubleshooting, check:
 - [ ] Prisma client is generated
 - [ ] Dependencies are installed
 - [ ] Port is not in use
-- [ ] Correct Node.js version (>= 14)
+- [ ] Correct Node.js version (>= 16)
 - [ ] Firewall allows connections
 - [ ] Logs show the actual error
 - [ ] Request format matches API docs
