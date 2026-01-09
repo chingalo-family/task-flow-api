@@ -77,6 +77,7 @@ Swagger docs at `http://localhost:3000/api-docs`
 - `POST /api/auth/login` - Login
 - `POST /api/auth/forgot-password` - Request password reset
 - `POST /api/auth/reset-password` - Reset password with token
+- `POST /api/auth/change-password` - Change password for the currently authenticated user.
 - `GET /api/auth/me` - Get current user
 
 ### Tasks
