@@ -2,6 +2,20 @@
 
 A robust RESTful API for task management built with Node.js, Express, TypeScript, and Prisma.
 
+## 📚 Documentation
+
+**Complete documentation is available in the [`docs/`](./docs/) folder:**
+
+- **[Getting Started](./docs/getting-started.md)** - Installation and setup guide
+- **[API Reference](./docs/api-reference.md)** - Complete API endpoints documentation
+- **[Configuration](./docs/configuration.md)** - Environment variables and settings
+- **[Development Guide](./docs/development.md)** - Development workflow and best practices
+- **[Database Schema](./docs/database-schema.md)** - Database structure and relationships
+- **[Architecture](./docs/architecture.md)** - System design and architecture
+- **[Deployment Guide](./docs/deployment.md)** - Production deployment instructions
+- **[Contributing](./docs/contributing.md)** - How to contribute to the project
+- **[Troubleshooting](./docs/troubleshooting.md)** - Common issues and solutions
+
 ## Features
 
 - 🔐 **Authentication**: JWT-based auth with password reset
@@ -166,20 +180,9 @@ npx prisma studio           # Open Prisma Studio (DB GUI)
 
 ## Email Configuration
 
-For password reset functionality, configure SMTP in `.env`:
+For password reset functionality, configure SMTP in `.env`.
 
-**Gmail Example:**
-1. Enable 2-Factor Authentication
-2. Generate App Password: https://myaccount.google.com/apppasswords
-3. Add to `.env`:
-
-```env
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your-email@gmail.com
-SMTP_PASS=your-16-char-app-password
-SMTP_FROM=noreply@taskflow.com
-```
+See the **[Email Setup Guide](./docs/email-setup.md)** for detailed configuration instructions.
 
 Without SMTP config, password reset emails will log to console (dev mode).
 
@@ -193,24 +196,27 @@ Without SMTP config, password reset emails will log to console (dev mode).
 - **Email**: Nodemailer
 - **Documentation**: Swagger/OpenAPI
 
-## Project Structure
+## Additional Resources
 
-```
-task-flow-api/
-├── prisma/
-│   ├── schema.prisma        # Database schema
-│   └── migrations/          # Migration history
-├── src/
-│   ├── controllers/         # Request handlers
-│   ├── routes/             # Route definitions
-│   ├── schemas/            # Zod validation schemas
-│   ├── middleware/         # Express middleware
-│   ├── utils/              # Helper functions
-│   └── server.ts           # App entry point
-├── .env.sample             # Environment template
-├── setup.sh                # Automated setup script
-└── package.json
-```
+- **[API Status](./docs/api-status.md)** - Feature implementation status
+- **[PM2 Guide](./docs/deployment-pm2.md)** - PM2 configuration and monitoring
+- **[Email Setup](./docs/email-setup.md)** - Email configuration guide
+
+## Contributing
+
+We welcome contributions! Please see the **[Contributing Guidelines](./docs/contributing.md)** for details on:
+
+- Code of conduct
+- Development workflow
+- Coding standards
+- Pull request process
+- Testing guidelines
+
+## Support
+
+- **Documentation**: Check the [docs](./docs/) folder
+- **Issues**: [GitHub Issues](https://github.com/chingalo-family/task-flow-api/issues)
+- **Troubleshooting**: See [Troubleshooting Guide](./docs/troubleshooting.md)
 
 ## License
 
