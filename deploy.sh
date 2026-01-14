@@ -12,8 +12,10 @@ if [ ! -f .env ]; then
 fi
 
 # Install dependencies
+# Install dependencies
 echo "📦 Installing dependencies..."
-npm install --production=false
+# Use npm ci for reliable builds from lockfile. ensure dev dependencies are installed for build step
+npm ci --include=dev
 
 # Generate Prisma Client
 echo "🔧 Generating Prisma Client..."
@@ -36,14 +38,9 @@ if ! command -v pm2 &> /dev/null; then
     npm install -g pm2
 fi
 
-# Stop existing instance if running
-echo "🛑 Stopping existing instance..."
-pm2 stop task-flow-api 2>/dev/null || true
-pm2 delete task-flow-api 2>/dev/null || true
-
-# Start application with PM2
-echo "▶️  Starting application with PM2..."
-pm2 start ecosystem.config.js --env production
+# Reload application (Zero-Downtime) or Start if not running
+echo "▶️  Reloading application with PM2..."
+pm2 reload ecosystem.config.js --env production || pm2 start ecosystem.config.js --env production
 
 # Save PM2 process list
 echo "💾 Saving PM2 process list..."
