@@ -101,10 +101,10 @@ router.get('/', getTasks);
  *                 type: string
  *               status:
  *                 type: string
- *                 enum: [PENDING, IN_PROGRESS, COMPLETED]
+ *                 enum: [pending, in_progress, completed]
  *               priority:
  *                 type: string
- *                 enum: [LOW, MEDIUM, HIGH, URGENT]
+ *                 enum: [low, medium, high, urgent]
  *               category:
  *                  type: string
  *               tags:
@@ -163,10 +163,10 @@ router.get('/:id', getTask);
  *                 type: string
  *               status:
  *                 type: string
- *                 enum: [PENDING, IN_PROGRESS, COMPLETED]
+ *                 enum: [pending, in_progress, completed]
  *               priority:
  *                 type: string
- *                 enum: [LOW, MEDIUM, HIGH, URGENT]
+ *                 enum: [low, medium, high, urgent]
  *     responses:
  *       200:
  *         description: Task updated
