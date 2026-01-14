@@ -22,6 +22,11 @@ Welcome to the comprehensive documentation for Task Flow API - a robust RESTful 
 - **[Deployment Guide](./deployment.md)** - Production deployment with PM2
 - **[Email Setup](./email-setup.md)** - Configure email for password reset
 
+### Tests & Assessments
+- **[Security Assessment](./tests/security-assessment.md)** - Security audit findings and recommendations
+- **[Performance Assessment](./tests/performance-assessment.md)** - Performance analysis and optimization tips
+- **[Deployment Assessment](./tests/deployment-strategy.md)** - Analysis of deployment scripts and strategy
+
 ### Contributing
 - **[Contributing Guidelines](./contributing.md)** - How to contribute to the project
 - **[Troubleshooting](./troubleshooting.md)** - Common issues and solutions

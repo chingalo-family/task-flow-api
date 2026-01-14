@@ -3,6 +3,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import compression from 'compression';
+import rateLimit from 'express-rate-limit';
 import authRoutes from './routes/auth.routes';
 import taskRoutes from './routes/task.routes';
 import teamRoutes from './routes/team.routes';
@@ -16,12 +18,36 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
+app.use(compression()); // Compress all responses
 app.use(express.json());
-app.use(cors());
+
+// CORS Configuration
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || '*', // Restrict in production
+  credentials: true
+}));
+
+// Security Configuration
 app.use(helmet({
   contentSecurityPolicy: false, // Allow inline scripts for HTML pages
 }));
-app.use(morgan('dev'));
+
+// Rate Limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.'
+});
+app.use('/api', limiter); // Apply to API routes
+
+// Logging
+if (process.env.NODE_ENV === 'production') {
+  app.use(morgan('combined', {
+    skip: (req, res) => res.statusCode < 400 // Log only errors in production to reduce IO
+  }));
+} else {
+  app.use(morgan('dev'));
+}
 
 // Serve static files (for password reset HTML page)
 app.use(express.static('public'));
