@@ -113,10 +113,28 @@ Swagger docs at `http://localhost:3000/api-docs`
 
 ```bash
 npm run dev       # Start development server with hot reload
+npm test          # Run the comprehensive test suite
 npm run build     # Build for production
 npm start         # Start production server (without PM2)
 npm run deploy    # Deploy with PM2 (automated)
 ```
+
+## Testing
+
+The project includes a comprehensive testing suite built with Jest and Supertest. It uses a mocked Prisma client for high-performance isolated tests.
+
+To run the tests:
+```bash
+npm test
+```
+
+The test suite covers:
+- **Authentication**: Registration and Login flows.
+- **Tasks**: Lifecycle and validation.
+- **Teams**: Management and membership.
+- **Users**: Profiles and user listing.
+- **Notifications**: Retrieval and status updates.
+
 
 ### PM2 Production Deployment
 
@@ -221,4 +239,4 @@ We welcome contributions! Please see the **[Contributing Guidelines](./docs/cont
 
 ## License
 
-MIT
+GNU GPL v3.0

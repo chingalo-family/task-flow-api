@@ -14,7 +14,7 @@ import { setupSwagger } from './utils/swagger';
 
 dotenv.config();
 
-const app = express();
+export const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
@@ -62,6 +62,9 @@ app.use('/api/tasks', taskRoutes);
 app.use('/api/teams', teamRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/notifications', notificationRoutes);
+import { errorHandler } from './middleware/error.middleware';
+
+app.use(errorHandler);
 
 app.get('/', (req, res) => {
   res.send('Task Flow API is running');
@@ -72,6 +75,8 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}

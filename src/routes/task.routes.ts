@@ -63,7 +63,7 @@ router.use(authenticate);
  *                 tasks:
  *                   type: array
  *                   items:
- *                     type: object
+ *                     $ref: '#/components/schemas/Task'
  *                 meta:
  *                   type: object
  *                   properties:
@@ -75,6 +75,22 @@ router.use(authenticate);
  *                       type: integer
  *                     totalPages:
  *                       type: integer
+ *             example:
+ *               success: true
+ *               tasks:
+ *                 - id: "550e8400-e29b-41d4-a716-446655440000"
+ *                   title: "Finish API documentation"
+ *                   description: "Update swagger with examples"
+ *                   status: "in_progress"
+ *                   priority: "high"
+ *                   progress: 50
+ *                   tags: ["api", "docs"]
+ *                   createdAt: "2026-01-14T12:00:00Z"
+ *               meta:
+ *                 total: 1
+ *                 page: 1
+ *                 limit: 20
+ *                 totalPages: 1
  */
 router.get('/', getTasks);
 
@@ -91,29 +107,34 @@ router.get('/', getTasks);
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - title
- *             properties:
- *               title:
- *                 type: string
- *               description:
- *                 type: string
- *               status:
- *                 type: string
- *                 enum: [pending, in_progress, completed]
- *               priority:
- *                 type: string
- *                 enum: [low, medium, high, urgent]
- *               category:
- *                  type: string
- *               tags:
- *                  type: array
- *                  items:
- *                      type: string
+ *             $ref: '#/components/schemas/CreateTaskRequest'
+ *           example:
+ *             title: "Investigate performance bottleneck"
+ *             description: "Profile the API and identify slow queries"
+ *             status: "pending"
+ *             priority: "urgent"
+ *             tags: ["performance", "backend"]
+ *             dueDate: "2026-01-20T00:00:00Z"
  *     responses:
  *       201:
  *         description: Task created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 task:
+ *                   $ref: '#/components/schemas/Task'
+ *             example:
+ *               success: true
+ *               task:
+ *                 id: "550e8400-e29b-41d4-a716-446655440001"
+ *                 title: "Investigate performance bottleneck"
+ *                 status: "pending"
+ *                 priority: "urgent"
+ *                 createdAt: "2026-01-14T12:05:00Z"
  */
 router.post('/', validate(createTaskSchema), createTask);
 
@@ -134,8 +155,28 @@ router.post('/', validate(createTaskSchema), createTask);
  *     responses:
  *       200:
  *         description: Task details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 task:
+ *                   $ref: '#/components/schemas/Task'
+ *             example:
+ *               success: true
+ *               task:
+ *                 id: "550e8400-e29b-41d4-a716-446655440000"
+ *                 title: "Finish API documentation"
+ *                 status: "in_progress"
  *       404:
  *         description: Task not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: false
+ *               message: "Task not found"
  */
 router.get('/:id', getTask);
 
@@ -157,19 +198,28 @@ router.get('/:id', getTask);
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               title:
- *                 type: string
- *               status:
- *                 type: string
- *                 enum: [pending, in_progress, completed]
- *               priority:
- *                 type: string
- *                 enum: [low, medium, high, urgent]
+ *             $ref: '#/components/schemas/UpdateTaskRequest'
+ *           example:
+ *             status: "completed"
+ *             progress: 100
  *     responses:
  *       200:
  *         description: Task updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 task:
+ *                   $ref: '#/components/schemas/Task'
+ *             example:
+ *               success: true
+ *               task:
+ *                 id: "550e8400-e29b-41d4-a716-446655440000"
+ *                 status: "completed"
+ *                 progress: 100
  */
 router.put('/:id', validate(updateTaskSchema), updateTask);
 
@@ -190,6 +240,11 @@ router.put('/:id', validate(updateTaskSchema), updateTask);
  *     responses:
  *       200:
  *         description: Task deleted
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: true
+ *               message: "Task deleted"
  */
 router.delete('/:id', deleteTask);
 

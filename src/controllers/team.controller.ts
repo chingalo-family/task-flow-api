@@ -1,10 +1,15 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../utils/prisma';
+import { ApiError } from '../utils/api-error';
 
-export const createTeam = async (req: Request, res: Response) => {
+export const createTeam = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, description, icon, color } = req.body;
-    const userId = req.user?.id;
+    const userId = (req as any).user?.id;
+
+    if (!userId) {
+        throw new ApiError(401, 'Unauthorized');
+    }
 
     const team = await prisma.team.create({
       data: {
@@ -28,13 +33,13 @@ export const createTeam = async (req: Request, res: Response) => {
 
     res.status(201).json({ success: true, team });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error' });
+    next(error);
   }
 };
 
-export const getTeams = async (req: Request, res: Response) => {
+export const getTeams = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = req.user?.id;
+    const userId = (req as any).user?.id;
     const teams = await prisma.team.findMany({
       where: {
         members: {
@@ -48,14 +53,14 @@ export const getTeams = async (req: Request, res: Response) => {
 
     res.json({ success: true, teams });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error' });
+    next(error);
   }
 };
 
-export const getTeam = async (req: Request, res: Response) => {
+export const getTeam = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    const userId = req.user?.id;
+    const userId = (req as any).user?.id;
 
     const team = await prisma.team.findFirst({
       where: {
@@ -74,19 +79,19 @@ export const getTeam = async (req: Request, res: Response) => {
     });
 
     if (!team) {
-      return res.status(404).json({ success: false, message: 'Team not found' });
+      throw new ApiError(404, 'Team not found');
     }
 
     res.json({ success: true, team });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error' });
+    next(error);
   }
 };
 
-export const updateTeam = async (req: Request, res: Response) => {
+export const updateTeam = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
-        const userId = req.user?.id;
+        const userId = (req as any).user?.id;
         const data = req.body;
 
         // Check if admin
@@ -95,7 +100,7 @@ export const updateTeam = async (req: Request, res: Response) => {
         });
 
         if (!member) {
-            return res.status(403).json({ success: false, message: 'Not authorized' });
+            throw new ApiError(403, 'Not authorized. Admin role required.');
         }
 
         const team = await prisma.team.update({
@@ -105,14 +110,14 @@ export const updateTeam = async (req: Request, res: Response) => {
 
         res.json({ success: true, team });
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Server error' });
+        next(error);
     }
 };
 
-export const deleteTeam = async (req: Request, res: Response) => {
+export const deleteTeam = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
-        const userId = req.user?.id;
+        const userId = (req as any).user?.id;
 
         // Check if admin
         const member = await prisma.teamMember.findFirst({
@@ -120,22 +125,22 @@ export const deleteTeam = async (req: Request, res: Response) => {
         });
 
         if (!member) {
-            return res.status(403).json({ success: false, message: 'Not authorized' });
+            throw new ApiError(403, 'Not authorized. Admin role required.');
         }
 
         await prisma.team.delete({ where: { id } });
 
         res.json({ success: true, message: 'Team deleted' });
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Server error' });
+        next(error);
     }
 };
 
-export const addMember = async (req: Request, res: Response) => {
+export const addMember = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         const { userId, role } = req.body;
-        const currentUserId = req.user?.id;
+        const currentUserId = (req as any).user?.id;
 
          // Check if requester is admin
          const member = await prisma.teamMember.findFirst({
@@ -143,7 +148,7 @@ export const addMember = async (req: Request, res: Response) => {
         });
 
         if (!member) {
-            return res.status(403).json({ success: false, message: 'Not authorized' });
+            throw new ApiError(403, 'Not authorized. Admin role required.');
         }
 
         const newMember = await prisma.teamMember.create({
@@ -158,14 +163,14 @@ export const addMember = async (req: Request, res: Response) => {
         res.status(201).json({ success: true, member: newMember });
 
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Server error' });
+        next(error);
     }
 }
 
-export const removeMember = async (req: Request, res: Response) => {
+export const removeMember = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id, userId } = req.params;
-        const currentUserId = req.user?.id;
+        const currentUserId = (req as any).user?.id;
 
          // Check if requester is admin
          const member = await prisma.teamMember.findFirst({
@@ -173,7 +178,7 @@ export const removeMember = async (req: Request, res: Response) => {
         });
 
         if (!member) {
-            return res.status(403).json({ success: false, message: 'Not authorized' });
+            throw new ApiError(403, 'Not authorized. Admin role required.');
         }
 
         await prisma.teamMember.deleteMany({
@@ -183,6 +188,7 @@ export const removeMember = async (req: Request, res: Response) => {
         res.json({ success: true, message: 'Member removed' });
 
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Server error' });
+        next(error);
     }
 }
+

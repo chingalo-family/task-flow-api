@@ -24,40 +24,27 @@ const router = Router();
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *               - username
- *             properties:
- *               email:
- *                 type: string
- *               password:
- *                 type: string
- *               username:
- *                 type: string
- *               name:
- *                 type: string
- *               phoneNumber:
- *                 type: string
+ *             $ref: '#/components/schemas/RegisterRequest'
+ *           example:
+ *             email: "john@example.com"
+ *             username: "johndoe"
+ *             password: "securePassword123"
+ *             name: "John Doe"
  *     responses:
  *       201:
  *         description: User created
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 token:
- *                   type: string
- *                 expiresIn:
- *                   type: number
- *                 expiresAt:
- *                   type: string
- *                 user:
- *                   type: object
+ *               $ref: '#/components/schemas/AuthResponse'
+ *             example:
+ *               success: true
+ *               token: "eyJhbGciOiJIUzI1Ni..."
+ *               expiresIn: 604800
+ *               user:
+ *                 id: "550e8400-e29b-41d4-a716-446655440003"
+ *                 username: "johndoe"
+ *                 email: "john@example.com"
  *       400:
  *         description: Validation error
  */
@@ -67,40 +54,31 @@ router.post('/register', validate(registerSchema), register);
  * @swagger
  * /api/auth/login:
  *   post:
- *     summary: Login a user with username
+ *     summary: Login a user
  *     tags: [Auth]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - username
- *               - password
- *             properties:
- *               username:
- *                 type: string
- *               password:
- *                 type: string
+ *             $ref: '#/components/schemas/LoginRequest'
+ *           example:
+ *             username: "johndoe"
+ *             password: "securePassword123"
  *     responses:
  *       200:
  *         description: Login successful
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 token:
- *                   type: string
- *                 expiresIn:
- *                   type: number
- *                 expiresAt:
- *                   type: string
- *                 user:
- *                   type: object
+ *               $ref: '#/components/schemas/AuthResponse'
+ *             example:
+ *               success: true
+ *               token: "eyJhbGciOiJIUzI1Ni..."
+ *               expiresIn: 604800
+ *               user:
+ *                 id: "550e8400-e29b-41d4-a716-446655440003"
+ *                 username: "johndoe"
  *       400:
  *         description: Invalid credentials
  */

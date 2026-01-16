@@ -410,6 +410,7 @@ GET /api/tasks?status=in_progress&priority=high
     "tags": ["docs", "api"],
     "attachments": [],
     "subtasks": [],
+    "assignedUserIds": [], 
     "dueDate": "2026-01-15T00:00:00.000Z",
     "completedAt": null,
     "createdAt": "2026-01-09T12:00:00.000Z",
@@ -446,11 +447,11 @@ Authorization: Bearer <token>
   "attachments": ["https://example.com/file.pdf"],
   "dueDate": "2026-01-20T00:00:00.000Z",
   "teamId": "team-uuid",  // Optional
+  "assignedUserIds": ["user-uuid-1", "user-uuid-2"], // Optional
   "subtasks": [           // Optional
     {
       "title": "Subtask 1",
-      "description": "Subtask description",
-      "status": "pending"
+      "isCompleted": false
     }
   ]
 }
@@ -468,7 +469,14 @@ Authorization: Bearer <token>
   "progress": 0,
   "tags": ["backend", "api"],
   "attachments": ["https://example.com/file.pdf"],
-  "subtasks": [...],
+  "subtasks": [
+      {
+          "title": "Subtask 1",
+          "isCompleted": false,
+          ...
+      }
+  ],
+  "assignedUserIds": ["user-uuid-1", "user-uuid-2"],
   "dueDate": "2026-01-20T00:00:00.000Z",
   "completedAt": null,
   "createdAt": "2026-01-09T12:00:00.000Z",
@@ -507,9 +515,11 @@ Authorization: Bearer <token>
     {
       "id": "subtask-uuid",
       "title": "Subtask 1",
+      "isCompleted": true,
       "status": "completed"
     }
   ],
+  "assignedUserIds": [],
   "dueDate": "2026-01-15T00:00:00.000Z",
   "completedAt": null,
   "createdAt": "2026-01-09T12:00:00.000Z",
@@ -942,48 +952,65 @@ Authorization: Bearer <token>
 
 ## Error Responses
 
-All endpoints may return the following error responses:
+All endpoints return a standardized error response format when something goes wrong:
 
-### 400 Bad Request
 ```json
 {
-  "error": "Validation error message"
+  "success": false,
+  "message": "Descriptive error message",
+  "errors": [], // Optional: array of sub-errors (e.g., validation fields)
+  "stack": "..." // Only available in development environment
+}
+```
+
+### 400 Bad Request (Validation)
+Returned when request parameters or body fail validation.
+```json
+{
+  "success": false,
+  "message": "Validation Error",
+  "errors": [
+    {
+      "path": "body.email",
+      "message": "Invalid email format"
+    }
+  ]
 }
 ```
 
 ### 401 Unauthorized
+Returned when authentication is missing or invalid.
 ```json
 {
-  "error": "No token provided" 
-}
-```
-
-or
-
-```json
-{
-  "error": "Invalid token"
+  "success": false,
+  "message": "Unauthorized"
 }
 ```
 
 ### 403 Forbidden
+Returned when the authenticated user doesn't have permissions for the resource.
 ```json
 {
-  "error": "Access denied"
+  "success": false,
+  "message": "Access denied"
 }
 ```
 
 ### 404 Not Found
+Returned when the requested resource doesn't exist.
 ```json
 {
-  "error": "Resource not found"
+  "success": false,
+  "message": "Task not found"
 }
 ```
 
 ### 500 Internal Server Error
+Returned for unexpected server-side issues.
 ```json
 {
-  "error": "Internal server error"
+  "success": false,
+  "message": "Something went wrong"
 }
 ```
 

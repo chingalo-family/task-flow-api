@@ -38,7 +38,26 @@ router.use(authenticate);
  *         description: Filter to show only unread notifications
  *     responses:
  *       200:
- *         description: List of notifications (max 50)
+ *         description: List of notifications
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 notifications:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Notification'
+ *             example:
+ *               success: true
+ *               notifications:
+ *                 - id: "550e8400-e29b-41d4-a716-446655440007"
+ *                   content: "You were assigned to a new task"
+ *                   type: "task_assignment"
+ *                   isRead: false
+ *                   createdAt: "2026-01-14T12:30:00Z"
  */
 router.get('/', getNotifications);
 
@@ -55,27 +74,23 @@ router.get('/', getNotifications);
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - content
- *               - type
- *               - userId
- *             properties:
- *               title:
- *                 type: string
- *               content:
- *                 type: string
- *               type:
- *                 type: string
- *               userId:
- *                 type: string
- *               relatedEntityId:
- *                 type: string
- *               relatedEntityType:
- *                 type: string
+ *             $ref: '#/components/schemas/CreateNotificationRequest'
+ *           example:
+ *             content: "Team meeting at 3 PM"
+ *             type: "announcement"
+ *             userId: "user-uuid-to-notify"
  *     responses:
  *       201:
  *         description: Notification created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 notification:
+ *                   $ref: '#/components/schemas/Notification'
  */
 router.post('/', validate(createNotificationSchema), createNotification);
 
@@ -116,8 +131,6 @@ router.put('/:id/read', markAsRead);
  *     responses:
  *       200:
  *         description: Notification deleted
- *       404:
- *         description: Notification not found
  */
 router.delete('/:id', deleteNotification);
 
@@ -134,5 +147,6 @@ router.delete('/:id', deleteNotification);
  *         description: All notifications marked as read
  */
 router.put('/read-all', markAllAsRead);
+
 
 export default router;
