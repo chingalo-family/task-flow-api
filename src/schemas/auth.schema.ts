@@ -14,13 +14,17 @@ import { z } from 'zod';
  *         email:
  *           type: string
  *           format: email
+ *           example: "user@example.com"
  *         username:
  *           type: string
+ *           example: "johndoe"
  *         password:
  *           type: string
  *           format: password
+ *           example: "Password123!"
  *         name:
  *           type: string
+ *           example: "John Doe"
  *     LoginRequest:
  *       type: object
  *       required:
@@ -29,29 +33,37 @@ import { z } from 'zod';
  *       properties:
  *         username:
  *           type: string
+ *           example: "johndoe"
  *         password:
  *           type: string
  *           format: password
+ *           example: "Password123!"
  *     AuthResponse:
  *       type: object
  *       properties:
  *         success:
  *           type: boolean
+ *           example: true
  *         token:
  *           type: string
+ *           example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
  *         expiresIn:
  *           type: integer
+ *           example: 3600
  *         user:
  *           type: object
  *           properties:
  *             id:
  *               type: string
  *               format: uuid
+ *               example: "123e4567-e89b-12d3-a456-426614174000"
  *             username:
  *               type: string
+ *               example: "johndoe"
  *             email:
  *               type: string
  *               format: email
+ *               example: "user@example.com"
  */
 export const registerSchema = z.object({
   body: z.object({

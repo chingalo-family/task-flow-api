@@ -15,7 +15,8 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
       throw new ApiError(400, 'Email or username already exists');
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const saltRounds = parseInt(process.env.BCRYPT_ROUNDS || '10');
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const user = await prisma.user.create({
       data: {
@@ -154,7 +155,8 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
 
     // Generate secure random token
     const resetToken = crypto.randomBytes(32).toString('hex');
-    const hashedToken = await bcrypt.hash(resetToken, 10);
+    const saltRounds = parseInt(process.env.BCRYPT_ROUNDS || '10');
+    const hashedToken = await bcrypt.hash(resetToken, saltRounds);
     
     // Set expiry based on environment variable (default: 1 hour)
     const expirationMs = parseInt(process.env.RESET_TOKEN_EXPIRATION || '3600000');
@@ -242,7 +244,8 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
     }
 
     // Hash new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const saltRounds = parseInt(process.env.BCRYPT_ROUNDS || '10');
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
 
     // Update password and clear reset token
     await prisma.user.update({
@@ -279,7 +282,8 @@ export const changePassword = async (req: Request, res: Response, next: NextFunc
       throw new ApiError(404, 'User not found');
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const saltRounds = parseInt(process.env.BCRYPT_ROUNDS || '10');
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
 
     await prisma.user.update({
       where: { id: userId },
