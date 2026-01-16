@@ -26,8 +26,22 @@ router.use(authenticate);
  *     responses:
  *       200:
  *         description: User profile data
- *       401:
- *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *             example:
+ *               success: true
+ *               user:
+ *                 id: "550e8400-e29b-41d4-a716-446655440003"
+ *                 username: "johndoe"
+ *                 email: "john@example.com"
+ *                 name: "John Doe"
  */
 router.get('/me', getProfile);
 
@@ -43,23 +57,22 @@ router.get('/me', getProfile);
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               avatar:
- *                 type: string
- *               email:
- *                 type: string
- *               username:
- *                 type: string
- *               phoneNumber:
- *                 type: string
+ *             $ref: '#/components/schemas/UpdateProfileRequest'
+ *           example:
+ *             name: "John Updated"
+ *             phoneNumber: "+1234567890"
  *     responses:
  *       200:
- *         description: Profile updated successfully
- *       400:
- *         description: Validation error
+ *         description: Profile updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
  */
 router.put('/me', validate(updateProfileSchema), updateProfile);
 
@@ -76,7 +89,6 @@ router.put('/me', validate(updateProfileSchema), updateProfile);
  *         name: search
  *         schema:
  *           type: string
- *         description: Search by name, email, or username
  *       - in: query
  *         name: page
  *         schema:
@@ -87,7 +99,7 @@ router.put('/me', validate(updateProfileSchema), updateProfile);
  *           type: integer
  *     responses:
  *       200:
- *         description: List of users with pagination
+ *         description: List of users
  *         content:
  *           application/json:
  *             schema:
@@ -98,19 +110,18 @@ router.put('/me', validate(updateProfileSchema), updateProfile);
  *                 users:
  *                   type: array
  *                   items:
- *                     type: object
+ *                     $ref: '#/components/schemas/User'
  *                 meta:
  *                   type: object
- *                   properties:
- *                     total:
- *                       type: integer
- *                     page:
- *                       type: integer
- *                     limit:
- *                       type: integer
- *                     totalPages:
- *                       type: integer
+ *             example:
+ *               success: true
+ *               users:
+ *                 - id: "user-uuid"
+ *                   username: "alice"
+ *               meta:
+ *                 total: 10
  */
 router.get('/', listUsers);
+
 
 export default router;

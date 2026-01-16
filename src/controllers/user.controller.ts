@@ -1,28 +1,34 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
 import { prisma } from '../utils/prisma';
+import { ApiError } from '../utils/api-error';
 
-export const getProfile = async (req: Request, res: Response) => {
+export const getProfile = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = await prisma.user.findUnique({
-      where: { id: req.user?.id },
+      where: { id: (req as any).user?.id },
       select: { id: true, email: true, name: true, avatar: true, createdAt: true },
     });
+    
+    if (!user) {
+        throw new ApiError(404, 'User not found');
+    }
+    
     res.json({ success: true, user });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error' });
+    next(error);
   }
 };
 
-export const updateProfile = async (req: Request, res: Response) => {
+export const updateProfile = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, avatar, email } = req.body;
-    const userId = req.user?.id;
+    const userId = (req as any).user?.id;
 
     if (email) {
       const existing = await prisma.user.findUnique({ where: { email } });
       if (existing && existing.id !== userId) {
-        return res.status(400).json({ success: false, message: 'Email already in use' });
+        throw new ApiError(400, 'Email already in use');
       }
     }
 
@@ -34,11 +40,11 @@ export const updateProfile = async (req: Request, res: Response) => {
 
     res.json({ success: true, user });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error' });
+    next(error);
   }
 };
 
-export const listUsers = async (req: Request, res: Response) => {
+export const listUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { search } = req.query;
     
@@ -84,6 +90,7 @@ export const listUsers = async (req: Request, res: Response) => {
         }
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error' });
+    next(error);
   }
 };
+

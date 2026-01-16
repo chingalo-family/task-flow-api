@@ -1,17 +1,18 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { prisma } from '../utils/prisma';
 import { sendPasswordResetEmail } from '../utils/email';
+import { ApiError } from '../utils/api-error';
 
-export const register = async (req: Request, res: Response) => {
+export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password, name, username, phoneNumber } = req.body;
 
     const existingUser = await prisma.user.findFirst({ where: { OR: [{ email }, { username }] } });
     if (existingUser) {
-      return res.status(400).json({ success: false, message: 'Email or username already exists' });
+      throw new ApiError(400, 'Email or username already exists');
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -49,7 +50,7 @@ export const register = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Something went wrong' });
+    next(error);
   }
 };
 
@@ -70,19 +71,19 @@ const parseDuration = (duration: string): number => {
     }
 };
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { username, password } = req.body;
 
     const user = await prisma.user.findUnique({ where: { username } });
     
     if (!user) {
-      return res.status(400).json({ success: false, message: 'Invalid credentials' });
+      throw new ApiError(400, 'Invalid credentials');
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ success: false, message: 'Invalid credentials' });
+      throw new ApiError(400, 'Invalid credentials');
     }
 
     const expiresIn = process.env.JWT_EXPIRATION || '7d';
@@ -109,14 +110,14 @@ export const login = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Something went wrong' });
+    next(error);
   }
 };
 
-export const getMe = async (req: Request, res: Response) => {
+export const getMe = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = await prisma.user.findUnique({
-      where: { id: req.user?.id },
+      where: { id: (req as any).user?.id },
       select: { 
         id: true, 
         email: true, 
@@ -127,13 +128,17 @@ export const getMe = async (req: Request, res: Response) => {
       },
     });
 
+    if (!user) {
+        throw new ApiError(404, 'User not found');
+    }
+
     res.status(200).json({ success: true, user });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Something went wrong' });
+    next(error);
   }
 };
 
-export const forgotPassword = async (req: Request, res: Response) => {
+export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email } = req.body;
 
@@ -172,12 +177,11 @@ export const forgotPassword = async (req: Request, res: Response) => {
       message: 'If an account exists with that email, a password reset link has been sent.',
     });
   } catch (error) {
-    console.error('Forgot password error:', error);
-    res.status(500).json({ success: false, message: 'Something went wrong' });
+    next(error);
   }
 };
 
-export const verifyResetToken = async (req: Request, res: Response) => {
+export const verifyResetToken = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { token } = req.body;
 
@@ -200,10 +204,7 @@ export const verifyResetToken = async (req: Request, res: Response) => {
     }
 
     if (!validUser) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid or expired reset token',
-      });
+      throw new ApiError(400, 'Invalid or expired reset token');
     }
 
     res.status(200).json({
@@ -211,12 +212,11 @@ export const verifyResetToken = async (req: Request, res: Response) => {
       email: validUser.email,
     });
   } catch (error) {
-    console.error('Verify token error:', error);
-    res.status(500).json({ success: false, message: 'Something went wrong' });
+    next(error);
   }
 };
 
-export const resetPassword = async (req: Request, res: Response) => {
+export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { token, newPassword } = req.body;
 
@@ -238,10 +238,7 @@ export const resetPassword = async (req: Request, res: Response) => {
     }
 
     if (!validUser) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid or expired reset token',
-      });
+      throw new ApiError(400, 'Invalid or expired reset token');
     }
 
     // Hash new password
@@ -262,20 +259,16 @@ export const resetPassword = async (req: Request, res: Response) => {
       message: 'Password has been reset successfully',
     });
   } catch (error) {
-    console.error('Reset password error:', error);
-    res.status(500).json({ success: false, message: 'Something went wrong' });
+    next(error);
   }
 };
 
-export const changePassword = async (req: Request, res: Response) => {
+export const changePassword = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = req.user?.id;
+    const userId = (req as any).user?.id;
 
     if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: 'Unauthorized',
-      });
+      throw new ApiError(401, 'Unauthorized');
     }
 
     const { newPassword } = req.body;
@@ -283,10 +276,7 @@ export const changePassword = async (req: Request, res: Response) => {
     const user = await prisma.user.findUnique({ where: { id: userId } });
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found',
-      });
+      throw new ApiError(404, 'User not found');
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -313,7 +303,7 @@ export const changePassword = async (req: Request, res: Response) => {
       expiresAt: expiresAt.toISOString(),
     });
   } catch (error) {
-    console.error('Change password error:', error);
-    res.status(500).json({ success: false, message: 'Something went wrong' });
+    next(error);
   }
 };
+

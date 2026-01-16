@@ -130,13 +130,14 @@ Stores tasks with support for subtasks, tags, and attachments.
 | updatedAt | DateTime | Last update timestamp | Auto-updated |
 | userId | String | Owner user ID | Foreign Key → User.id |
 | teamId | String | Team ID (if team task) | Foreign Key → Team.id, Optional |
-| parentTaskId | String | Parent task ID (if subtask) | Foreign Key → Task.id, Optional |
+| parentTaskId | String | Parent task ID (if subtask) | Foreign Key → Task.id, Optional, OnDelete: Cascade |
 
 **Relationships:**
 - Belongs to `User` (user)
 - Belongs to `Team` (team) - Optional
 - Belongs to `Task` (parentTask) - Optional, for subtasks
 - Has many `Task` (subtasks) - Cascade delete
+- Has many `User` (assignees) - Many-to-many relationship
 
 **Status Values:**
 - `pending`
@@ -299,7 +300,7 @@ Stores user notifications with support for related entities.
 | actorUsername | String | Actor's username | Optional |
 | actorAvatarUrl | String | Actor's avatar URL | Optional |
 | createdAt | DateTime | Creation timestamp | Default: now() |
-| userId | String | Recipient user ID | Foreign Key → User.id |
+| userId | String | Recipient user ID | Foreign Key → User.id, OnDelete: Cascade |
 
 **Relationships:**
 - Belongs to `User` (user) - Cascade delete

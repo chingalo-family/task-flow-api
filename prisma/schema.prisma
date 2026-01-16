@@ -26,6 +26,7 @@ model User {
   notifications Notification[]
   teamMemberships TeamMember[]
   createdTeams  Team[] @relation("CreatedTeams")
+  assignedTasks Task[] @relation("TaskAssignees")
 }
 
 model Task {
@@ -56,6 +57,8 @@ model Task {
 
   teamId      String?
   team        Team?    @relation(fields: [teamId], references: [id])
+
+  assignees   User[]   @relation("TaskAssignees")
 
   parentTaskId String?
   parentTask   Task?   @relation("TaskSubtasks", fields: [parentTaskId], references: [id], onDelete: Cascade)

@@ -1,5 +1,51 @@
 import { z } from 'zod';
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Team:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *         name:
+ *           type: string
+ *         description:
+ *           type: string
+ *         icon:
+ *           type: string
+ *         color:
+ *           type: string
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *     CreateTeamRequest:
+ *       type: object
+ *       required:
+ *         - name
+ *       properties:
+ *         name:
+ *           type: string
+ *         description:
+ *           type: string
+ *         icon:
+ *           type: string
+ *         color:
+ *           type: string
+ *     UpdateTeamRequest:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *         description:
+ *           type: string
+ *         icon:
+ *           type: string
+ *         color:
+ *           type: string
+ */
 export const createTeamSchema = z.object({
   body: z.object({
     name: z.string().min(1),

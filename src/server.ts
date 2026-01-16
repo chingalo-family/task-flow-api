@@ -62,6 +62,9 @@ app.use('/api/tasks', taskRoutes);
 app.use('/api/teams', teamRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/notifications', notificationRoutes);
+import { errorHandler } from './middleware/error.middleware';
+
+app.use(errorHandler);
 
 app.get('/', (req, res) => {
   res.send('Task Flow API is running');
