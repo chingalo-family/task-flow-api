@@ -52,10 +52,10 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Serve static files (for password reset HTML page)
-// Special route for reset-password.html to inject PUBLIC_URL
+// Special route for reset-password.html to inject FRONTEND_URL
 app.get('/reset-password.html', (req, res) => {
   const filePath = path.join(__dirname, '../public/reset-password.html');
-  const publicUrl = process.env.PUBLIC_URL || '';
+  const publicUrl = process.env.FRONTEND_URL || '';
   
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
@@ -63,8 +63,8 @@ app.get('/reset-password.html', (req, res) => {
       return res.status(500).send('Internal Server Error');
     }
     
-    // Inject PUBLIC_URL into the HTML
-    const result = data.replace(/{{PUBLIC_URL}}/g, publicUrl);
+    // Inject FRONTEND_URL into the HTML
+    const result = data.replace(/{{FRONTEND_URL}}/g, publicUrl);
     res.send(result);
   });
 });
