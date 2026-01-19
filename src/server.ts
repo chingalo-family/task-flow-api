@@ -11,6 +11,8 @@ import teamRoutes from './routes/team.routes';
 import userRoutes from './routes/user.routes';
 import notificationRoutes from './routes/notification.routes';
 import { setupSwagger } from './utils/swagger';
+import path from 'path';
+import fs from 'fs';
 
 dotenv.config();
 
@@ -50,6 +52,23 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Serve static files (for password reset HTML page)
+// Special route for reset-password.html to inject PUBLIC_URL
+app.get('/reset-password.html', (req, res) => {
+  const filePath = path.join(__dirname, '../public/reset-password.html');
+  const publicUrl = process.env.PUBLIC_URL || '';
+  
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading reset-password.html:', err);
+      return res.status(500).send('Internal Server Error');
+    }
+    
+    // Inject PUBLIC_URL into the HTML
+    const result = data.replace(/{{PUBLIC_URL}}/g, publicUrl);
+    res.send(result);
+  });
+});
+
 app.use(express.static('public'));
 
 // Routes Configuration
